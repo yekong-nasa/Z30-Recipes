@@ -1,0 +1,15 @@
+name: Build and test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate synthetic fixtures
+        run: python3 tools/generate_test_fixtures.py
+      - name: Test core and mock-camera transport
+        run: swift test
+      - name: Build iOS app without signing
+        run: xcodebuild -project Z30Lab.xcodeproj -scheme Z30Lab -configuration Release -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
